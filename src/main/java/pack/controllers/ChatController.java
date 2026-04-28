@@ -65,12 +65,7 @@ public class ChatController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    /** POST /api/chat/{chatId}/messages — 7. 메시지 단건 저장 (보조용) */
-    @PostMapping("/{chatId}/messages")
-    public ResponseEntity<ChatDto.ChatMessageResponse> addChatMessage(
-            @AuthenticationPrincipal User user,
-            @PathVariable Long chatId,
-            @RequestBody ChatDto.ChatMessageRequest request) {
-        return ResponseEntity.ok(chatService.addChatMessage(user, chatId, request));
-    }
+    // AI 도입 전 에코 패턴용 — POST /api/chat/{chatId}/messages (7번 엔드포인트) 비활성화
+    // @PostMapping("/{chatId}/messages")
+    // public ResponseEntity<ChatDto.ChatMessageResponse> addChatMessage(...) { ... }
 }

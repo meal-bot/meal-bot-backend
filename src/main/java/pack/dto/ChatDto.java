@@ -10,7 +10,7 @@ import pack.dto.AiDto;
 
 public class ChatDto {
 
-    // POST /api/chats/{chatId}/messages 요청
+    // 게스트 메시지 전송 요청 시 메시지 형식 (role + content)
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

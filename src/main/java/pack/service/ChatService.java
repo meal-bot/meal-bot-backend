@@ -79,26 +79,9 @@ public class ChatService {
         return new ChatDto.GuestSendResponse(aiResponse.getAnswer(), aiResponse.getResults());
     }
 
-    @Transactional
-    public ChatDto.ChatMessageResponse addChatMessage(User user, Long chatId, ChatDto.ChatMessageRequest request) {
-        Chat chat = chatRepository.findByIdAndUser(chatId, user)
-                .orElseThrow(() -> new IllegalArgumentException("채팅을 찾을 수 없습니다: " + chatId));
-
-        if ("user".equals(request.getRole()) && "새 채팅".equals(chat.getTitle())) {
-            String title = request.getContent().length() > 20
-                    ? request.getContent().substring(0, 20) + "..."
-                    : request.getContent();
-            chat.setTitle(title);
-        }
-
-        ChatMessage message = chatMessageRepository.save(ChatMessage.builder()
-                .chat(chat)
-                .role(request.getRole())
-                .content(request.getContent())
-                .build());
-
-        return new ChatDto.ChatMessageResponse(message.getId(), message.getRole(), message.getContent(), message.getCreatedAt());
-    }
+    // AI 도입 전 에코 패턴용 — send()가 유저 메시지 저장 + AI 호출 + 응답 저장을 한 번에 처리하므로 중복
+    // @Transactional
+    // public ChatDto.ChatMessageResponse addChatMessage(User user, Long chatId, ChatDto.ChatMessageRequest request) { ... }
 
     @Transactional
     public void deleteChat(User user, Long chatId) {
