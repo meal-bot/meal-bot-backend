@@ -50,6 +50,12 @@ public class Inbody {
     @Column(precision = 4, scale = 1)
     private BigDecimal bmi;
 
+    private Double activityLevel;
+
+    private Integer bmr;
+
+    private Integer dailyCalories;
+
     @Column(precision = 4, scale = 1)
     private BigDecimal protein;
 

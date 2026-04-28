@@ -19,12 +19,12 @@ public class InbodyDto {
         private BigDecimal weight;
         private Integer age;
         private String gender; // "남성" | "여성"
+        private Double activityLevel; // 1.2 | 1.375 | 1.55 | 1.725 | 1.9
 
         // 상세 측정값 (선택, null 허용)
         private BigDecimal skeletalMuscle;
         private BigDecimal bodyFat;
         private BigDecimal bodyFatPercent;
-        private BigDecimal bmi;
         private BigDecimal protein;
         private BigDecimal mineral;
         private BigDecimal bodyWater;
@@ -43,6 +43,8 @@ public class InbodyDto {
         private BigDecimal bodyFat;
         private BigDecimal bodyFatPercent;
         private BigDecimal bmi;
+        private Integer bmr;
+        private Integer dailyCalories;
         private BigDecimal protein;
         private BigDecimal mineral;
         private BigDecimal bodyWater;
