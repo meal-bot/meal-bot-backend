@@ -1,0 +1,76 @@
+package pack.controllers;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import pack.dto.ChatDto;
+import pack.entity.User;
+import pack.service.ChatService;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/chat")
+@RequiredArgsConstructor
+public class ChatController {
+
+    private final ChatService chatService;
+
+    /** POST /api/chat — 1. 새 채팅 스레드 생성 */
+    @PostMapping
+    public ResponseEntity<ChatDto.ChatResponse> createChat(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(chatService.createChat(user));
+    }
+
+    /** POST /api/chat/guest/sendMessage — 2. 비로그인 메시지 전송 */
+    @PostMapping("/guest/sendMessage")
+    public ResponseEntity<ChatDto.GuestSendResponse> sendMessageToGuest(
+            @RequestBody ChatDto.GuestSendRequest request) {
+        return ResponseEntity.ok(chatService.sendGuest(request));
+    }
+
+    /** POST /api/chat/{chatId}/sendMessage — 3. 메시지 전송 + AI 응답 */
+    @PostMapping("/{chatId}/sendMessage")
+    public ResponseEntity<ChatDto.SendResponse> sendMessage(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatId,
+            @RequestBody ChatDto.SendRequest request) {
+        return ResponseEntity.ok(chatService.send(user, chatId, request));
+    }
+
+    /** GET /api/chat — 4. 내 채팅 목록 조회 (사이드바) */
+    @GetMapping
+    public ResponseEntity<List<ChatDto.ChatResponse>> getChats(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(chatService.getChats(user));
+    }
+
+    /** GET /api/chat/{chatId} — 5. 특정 채팅의 전체 메시지 조회 */
+    @GetMapping("/{chatId}")
+    public ResponseEntity<ChatDto.ChatDetailResponse> getMessages(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatId) {
+        return ResponseEntity.ok(chatService.getChat(user, chatId));
+    }
+
+    /** DELETE /api/chat/{chatId} — 6. 채팅 삭제 */
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<Map<String, Boolean>> deleteChat(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatId) {
+        chatService.deleteChat(user, chatId);
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    /** POST /api/chat/{chatId}/messages — 7. 메시지 단건 저장 (보조용) */
+    @PostMapping("/{chatId}/messages")
+    public ResponseEntity<ChatDto.ChatMessageResponse> addChatMessage(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatId,
+            @RequestBody ChatDto.ChatMessageRequest request) {
+        return ResponseEntity.ok(chatService.addChatMessage(user, chatId, request));
+    }
+}
