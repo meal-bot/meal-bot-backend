@@ -3,6 +3,7 @@ package pack.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pack.dto.AiDto;
 import pack.dto.ChatDto;
 import pack.entity.Chat;
 import pack.entity.ChatMessage;
@@ -18,6 +19,7 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final AiClient aiClient;
 
     @Transactional
     public ChatDto.ChatResponse createChat(User user) {
@@ -62,19 +64,19 @@ public class ChatService {
         chatMessageRepository.save(ChatMessage.builder()
                 .chat(chat).role("user").content(request.getContent()).build());
 
-        // TODO: 파이썬 AI 서버 완성 후 아래 한 줄을 AiClient.ask(request.getContent(), ...) 로 교체
-        String aiReply = request.getContent();
+        AiDto.Response aiResponse = aiClient.ask(request.getContent());
 
         ChatMessage reply = chatMessageRepository.save(
                 ChatMessage.builder()
-                        .chat(chat).role("assistant").content(aiReply).build());
+                        .chat(chat).role("assistant").content(aiResponse.getAnswer()).build());
 
-        return new ChatDto.SendResponse(reply.getId(), aiReply);
+        return new ChatDto.SendResponse(reply.getId(), aiResponse.getAnswer(), aiResponse.getResults());
     }
 
     public ChatDto.GuestSendResponse sendGuest(ChatDto.GuestSendRequest request) {
-        // TODO: 파이썬 AI 서버 완성 후 request.getMessages()를 AI 서버로 전달하도록 교체
-        return new ChatDto.GuestSendResponse("메시지를 성공적으로 받았습니다.");
+        String query = request.getMessages().getLast().getContent();
+        AiDto.Response aiResponse = aiClient.ask(query);
+        return new ChatDto.GuestSendResponse(aiResponse.getAnswer(), aiResponse.getResults());
     }
 
     @Transactional

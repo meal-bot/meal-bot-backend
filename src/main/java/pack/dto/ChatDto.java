@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import pack.dto.AiDto;
 
 public class ChatDto {
 
@@ -35,10 +36,10 @@ public class ChatDto {
     }
 
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     public static class GuestSendResponse {
         private String reply;
+        private List<AiDto.RecipeResult> results;
     }
 
     // 메시지 전송 응답 (AI 응답 포함)
@@ -47,6 +48,7 @@ public class ChatDto {
     public static class SendResponse {
         private Long messageId;
         private String reply;
+        private List<AiDto.RecipeResult> results;
     }
 
     // 채팅 생성/목록 응답 (사이드바용)

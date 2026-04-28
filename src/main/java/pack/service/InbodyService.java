@@ -7,6 +7,7 @@ import pack.dto.InbodyDto;
 import pack.entity.Inbody;
 import pack.entity.User;
 import pack.repository.InbodyRepository;
+import pack.util.InbodyCalculator;
 
 import java.util.List;
 
@@ -18,16 +19,21 @@ public class InbodyService {
 
     @Transactional
     public InbodyDto.InbodyResponse save(User user, InbodyDto.SaveRequest request) {
+        Inbody.Gender gender = parseGender(request.getGender());
+        int bmr = InbodyCalculator.calcBmr(request.getHeight(), request.getWeight(), request.getAge(), gender);
         Inbody inbody = Inbody.builder()
                 .user(user)
                 .height(request.getHeight())
                 .weight(request.getWeight())
                 .age(request.getAge())
-                .gender(parseGender(request.getGender()))
+                .gender(gender)
+                .activityLevel(request.getActivityLevel())
                 .skeletalMuscle(request.getSkeletalMuscle())
                 .bodyFat(request.getBodyFat())
                 .bodyFatPercent(request.getBodyFatPercent())
-                .bmi(request.getBmi())
+                .bmi(InbodyCalculator.calcBmi(request.getHeight(), request.getWeight()))
+                .bmr(bmr)
+                .dailyCalories(InbodyCalculator.calcDailyCalories(bmr, request.getActivityLevel()))
                 .protein(request.getProtein())
                 .mineral(request.getMineral())
                 .bodyWater(request.getBodyWater())
@@ -70,6 +76,8 @@ public class InbodyService {
                 inbody.getBodyFat(),
                 inbody.getBodyFatPercent(),
                 inbody.getBmi(),
+                inbody.getBmr(),
+                inbody.getDailyCalories(),
                 inbody.getProtein(),
                 inbody.getMineral(),
                 inbody.getBodyWater(),
