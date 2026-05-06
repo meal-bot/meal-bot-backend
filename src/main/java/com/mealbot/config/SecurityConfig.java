@@ -70,10 +70,9 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
-                            "/api/chat",
 //                            "/api/signup",
 //                            "/api/login",
-                            "/api/chat/guest/send",
+                            "/api/chat/guest/sendMessage",
                             "/oauth2/**",
                             "/login/oauth2/**"
                     ).permitAll()
