@@ -67,6 +67,9 @@ public class SecurityConfig {
                     // 아래 경로는 로그인 없이도 누구나 접근 가능
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
                             "/api/chat",
 //                            "/api/signup",
 //                            "/api/login",
