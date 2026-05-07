@@ -1,6 +1,7 @@
 package com.mealbot.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,9 +35,12 @@ import java.util.List;
 @RequiredArgsConstructor  // Lombok: final 필드를 파라미터로 받는 생성자 자동 생성 (의존성 주입)
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService; // Google 사용자 정보 처리 서비스
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;       // OAuth2 로그인 성공 후 JWT 발급 핸들러
-    private final JwtAuthFilter jwtAuthFilter;                     // 매 요청마다 JWT 검증하는 필터
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthFilter jwtAuthFilter;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     /**
      * 스프링 시큐리티 필터 체인을 구성하는 핵심 메서드.
@@ -110,8 +114,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 허용할 출처(Origin) 목록: React 개발 서버만 허용
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(frontendUrl));
 
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

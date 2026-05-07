@@ -2,7 +2,7 @@ package com.mealbot.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -12,27 +12,20 @@ import com.mealbot.repository.UserRepository;
 
 import java.io.IOException;
 
-/**
- * [핸들러] Google OAuth2 로그인 성공 후 JWT를 발급하고 프론트엔드로 리다이렉트하는 핸들러.
- *
- * 처리 흐름 (이 핸들러가 호출되기 이전 단계 포함):
- *   1. 사용자가 /oauth2/authorization/google 로 접근 → Google 로그인 페이지로 이동
- *   2. Google 인증 완료 → /login/oauth2/code/google 로 콜백
- *   3. CustomOAuth2UserService.loadUser() → Google 사용자 정보를 DB에 저장/갱신
- *   4. [이 핸들러] onAuthenticationSuccess() 호출
- *      → DB에서 User 조회 → JWT 생성 → 프론트엔드 콜백 URL로 리다이렉트
- *   5. 프론트엔드(/oauth/callback)에서 URL 파라미터의 token을 꺼내 localStorage 등에 저장
- *   6. 이후 API 요청 시 Authorization: Bearer {token} 헤더로 전송
- *
- * SimpleUrlAuthenticationSuccessHandler를 상속받아
- * 기본 리다이렉트 동작을 오버라이드하고 JWT 전달 로직을 추가함.
- */
 @Component
-@RequiredArgsConstructor  // Lombok: final 필드를 파라미터로 받는 생성자 자동 생성 (의존성 주입)
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final String frontendUrl;
+
+    public OAuth2SuccessHandler(JwtUtil jwtUtil,
+                                UserRepository userRepository,
+                                @Value("${app.frontend-url}") String frontendUrl) {
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+        this.frontendUrl = frontendUrl;
+    }
 
     /**
      * OAuth2 인증 성공 시 스프링 시큐리티가 자동으로 호출하는 메서드.
@@ -70,6 +63,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //
         //    주의: URL에 토큰을 노출하는 방식은 브라우저 히스토리에 남을 수 있음.
         //    프로덕션에서는 HttpOnly 쿠키나 Authorization Code 방식을 고려할 것.
-        response.sendRedirect("http://localhost:5173/oauth/callback?token=" + token);
+        response.sendRedirect(frontendUrl + "/oauth/callback?token=" + token);
     }
 }
