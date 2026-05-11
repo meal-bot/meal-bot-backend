@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/** 채팅 세션(Chat) 내 단건 메시지. role로 발화자(user/assistant)를 구분한다. */
 @Entity
 @Table(name = "chat_messages")
 @Getter @Setter

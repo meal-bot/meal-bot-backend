@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/** 사용자의 채팅 세션 단위. 여러 개의 ChatMessage를 묶는 대화 컨테이너. */
 @Entity
 @Table(name = "chats")
 @Getter @Setter

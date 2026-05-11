@@ -6,6 +6,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import com.mealbot.dto.AiDto;
+import java.util.List;
 
 @Component
 public class AiClient {
@@ -32,11 +33,17 @@ public class AiClient {
         this.recommendationMode = recommendationMode;
     }
 
-    public AiDto.Response ask(String query) {
+    /**
+     * Python AI 서버에 레시피 추천 요청을 전송하고 응답을 반환한다.
+     *
+     * @param query    현재 사용자 메시지 (RAG 검색 키워드로 사용)
+     * @param messages 최근 대화 히스토리 (Python이 대화 맥락 유지에 활용)
+     */
+    public AiDto.Response ask(String query, List<AiDto.MessageDto> messages) {
         return restClient.post()
                 .uri(RECOMMEND_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new AiDto.Request(query, recommendationLimit, recommendationMode))
+                .body(new AiDto.Request(query, recommendationLimit, recommendationMode, messages))
                 .retrieve()
                 .body(AiDto.Response.class);
     }

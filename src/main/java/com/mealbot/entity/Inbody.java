@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/** 사용자의 인바디 측정 기록. BMR·일일 권장 칼로리는 저장 시 자동 계산된다. */
 @Entity
 @Table(name = "inbody")
 @Getter @Setter

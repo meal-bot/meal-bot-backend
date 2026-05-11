@@ -46,7 +46,7 @@ public class InbodyService {
 
     public List<InbodyDto.InbodyResponse> getList(User user) {
         return inbodyRepository.findByUserOrderByMeasuredAtDesc(user).stream()
-                .map(this::toResponse)
+                .map((inbody) -> this.toResponse(inbody))
                 .toList();
     }
 
