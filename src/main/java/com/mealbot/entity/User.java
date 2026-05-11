@@ -30,13 +30,20 @@ public class User {
 
     /**
      * 사용자 이메일 주소.
-     * - unique = true : 같은 이메일로 중복 가입 불가
-     * - nullable = false : 반드시 값이 있어야 함
-     * - OAuth2 로그인 시 Google에서 제공하는 email 값이 저장됨
-     * - JWT 토큰의 subject(주체)로 사용되어 사용자를 식별하는 핵심 키
+     * - Google 로그인: 항상 존재, JWT subject로 사용
+     * - 카카오 로그인: 동의 거부 시 null 가능 → JWT subject는 kakaoId 사용
      */
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
+
+    /**
+     * 카카오 고유 식별자 (카카오 로그인 사용자 전용).
+     * - 카카오 API 응답 최상위 "id" 값 (카카오 서버에서 발급, 변하지 않음)
+     * - Google 로그인 사용자는 null
+     * - JWT subject가 "kakao_" 접두사일 때 이 값으로 사용자를 조회
+     */
+    @Column(unique = true)
+    private String kakaoId;
 
     /**
      * 사용자 이름 (Google 계정 표시 이름).

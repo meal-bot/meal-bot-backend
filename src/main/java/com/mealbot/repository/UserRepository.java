@@ -35,4 +35,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
      *   - JwtAuthFilter           : 매 요청마다 JWT의 이메일로 사용자 인증 처리
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * 카카오 고유 ID로 사용자를 조회한다.
+     * JWT subject가 "kakao_" 접두사인 경우 JwtAuthFilter에서 사용.
+     * → SELECT * FROM users WHERE kakao_id = ?
+     */
+    Optional<User> findByKakaoId(String kakaoId);
 }

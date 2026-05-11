@@ -69,11 +69,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // 5. 토큰에서 클레임(payload)을 꺼냄
             Claims claims = jwtUtil.getClaims(token);
 
-            // 6. 클레임의 subject(주체)에서 이메일을 추출
-            String email = claims.getSubject();
+            // 6. 클레임의 subject(주체) 추출
+            //    - Google : 이메일 문자열
+            //    - 카카오 : "kakao_{id}" 형태
+            String subject = claims.getSubject();
 
-            // 7. 이메일로 DB에서 실제 사용자를 조회하고, 존재하면 인증 처리
-            userRepository.findByEmail(email).ifPresent(user -> {
+            // 7. subject 형태에 따라 DB 조회 방식 분기 후 인증 처리
+            java.util.Optional<com.mealbot.entity.User> userOpt = subject.startsWith("kakao_")
+                    ? userRepository.findByKakaoId(subject.substring(6)) // "kakao_" 접두사 제거 후 조회
+                    : userRepository.findByEmail(subject);
+
+            userOpt.ifPresent(user -> {
 
                 // 스프링 시큐리티의 인증 객체 생성:
                 //   - principal   : 인증된 사용자 (User 엔티티)

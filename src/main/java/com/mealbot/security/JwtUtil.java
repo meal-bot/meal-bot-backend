@@ -56,8 +56,13 @@ public class JwtUtil {
      * @return 서명된 JWT 문자열 (예: "eyJhbGciOiJIUzI1NiJ9....")
      */
     public String generateToken(User user) {
+        // Google: subject = 이메일 / 카카오: subject = "kakao_{id}" (이메일 없을 수 있음)
+        String subject = (user.getEmail() != null)
+                ? user.getEmail()
+                : "kakao_" + user.getKakaoId();
+
         return Jwts.builder()
-                .subject(user.getEmail())                                      // 토큰 주체: 이메일
+                .subject(subject)                                              // 토큰 주체
                 .claim("name", user.getName())                                 // 커스텀 클레임: 이름
                 .claim("role", user.getRole().name())                          // 커스텀 클레임: 권한
                 .issuedAt(new Date())                                          // 발급 시각

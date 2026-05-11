@@ -40,18 +40,30 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException {
 
         // 1. 인증 주체(principal)를 OAuth2User 타입으로 꺼냄
-        //    → CustomOAuth2UserService.loadUser()에서 반환한 Google 사용자 정보 객체
+        //    → CustomOAuth2UserService.loadUser()에서 반환한 소셜 사용자 정보 객체
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 2. Google에서 받은 사용자 속성에서 이메일을 추출
-        //    이메일은 User 엔티티의 고유 식별자로 사용됨
-        String email = oAuth2User.getAttribute("email");
+        // 2. 제공자(Google/카카오)를 구분해 이메일 추출
+        //    - Google : attribute에 "email" 키가 바로 존재
+        //    - 카카오  : "kakao_account" 맵 안에 "email"이 중첩되어 있음
+        org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken oauthToken =
+                (org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken) authentication;
+        String provider = oauthToken.getAuthorizedClientRegistrationId();
 
-        // 3. 이메일로 DB에서 User 엔티티를 조회
-        //    CustomOAuth2UserService에서 이미 저장했으므로 반드시 존재해야 함
-        //    없으면 IllegalStateException 발생 (시스템 오류 상황)
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 DB에서 찾을 수 없음: " + email));
+        // 3. 제공자에 따라 DB 조회 방식 분기
+        //    - Google : 이메일로 조회 (항상 존재)
+        //    - 카카오 : kakaoId로 조회 (이메일 없을 수 있음)
+        User user;
+        if ("kakao".equals(provider)) {
+            String kakaoId = String.valueOf((Object) oAuth2User.getAttribute("id"));
+            user = userRepository.findByKakaoId(kakaoId)
+                    .orElseThrow(() -> new IllegalStateException("카카오 로그인 사용자를 DB에서 찾을 수 없음: " + kakaoId));
+        } else {
+            // Google
+            String email = oAuth2User.getAttribute("email");
+            user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalStateException("구글 로그인 사용자를 DB에서 찾을 수 없음: " + email));
+        }
 
         // 4. JwtUtil을 이용해 해당 사용자의 JWT 토큰을 생성
         //    토큰에는 이메일, 이름, 권한, 만료 시각이 포함됨
