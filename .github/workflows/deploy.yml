@@ -19,7 +19,9 @@ jobs:
           distribution: 'corretto'
 
       - name: JAR 빌드
-        run: ./mvnw package -DskipTests
+        run: |
+          chmod +x ./mvnw
+          ./mvnw package -DskipTests
 
       - name: EC2에 JAR 전송
         uses: appleboy/scp-action@v0.1.7
