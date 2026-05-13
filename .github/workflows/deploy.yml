@@ -40,10 +40,4 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            pkill -f "mealbot" || true
-            sleep 2
-            nohup java -jar ~/app/*.jar \
-              --spring.profiles.active=aws \
-              --spring.config.additional-location=file:$HOME/config/ \
-              > ~/app/app.log 2>&1 &
-            disown $!
+            sudo systemctl restart mealbot
