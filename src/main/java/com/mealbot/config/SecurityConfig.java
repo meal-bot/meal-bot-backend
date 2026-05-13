@@ -42,6 +42,9 @@ public class SecurityConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    @Value("${app.frontend-url-local:http://localhost:5173}")
+    private String frontendUrlLocal;
+
     /**
      * 스프링 시큐리티 필터 체인을 구성하는 핵심 메서드.
      * 모든 HTTP 요청은 이 설정에 정의된 규칙을 따름.
@@ -114,7 +117,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedOrigins(List.of(frontendUrl, frontendUrlLocal));
 
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
