@@ -52,15 +52,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // ── 카카오: 응답이 중첩 구조이므로 kakao_account 맵을 먼저 꺼낸 뒤 추출
             java.util.Map<String, Object> kakaoAccount =
                     oAuth2User.getAttribute("kakao_account");
-            java.util.Map<String, Object> profile =
-                    (java.util.Map<String, Object>) kakaoAccount.get("profile");
+            java.util.Map<String, Object> profile = kakaoAccount != null
+                    ? (java.util.Map<String, Object>) kakaoAccount.get("profile")
+                    : null;
 
-            // 카카오 고유 ID (최상위 "id" 값, 카카오 서버 발급 식별자)
-            // Object로 명시적 캐스팅 후 변환 (Long → char[] 오버로드 오해 방지)
             String kakaoId = String.valueOf((Object) oAuth2User.getAttribute("id"));
-            email   = (String) kakaoAccount.get("email"); // 선택 동의 → null 가능
-            name    = (String) profile.get("nickname");
-            picture = (String) profile.get("profile_image_url");
+            email   = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
+            name    = profile != null ? (String) profile.get("nickname") : null;
+            picture = profile != null ? (String) profile.get("profile_image_url") : null;
 
             // 카카오 사용자는 kakaoId로 조회 (이메일 없을 수 있음)
             User user = userRepository.findByKakaoId(kakaoId)
