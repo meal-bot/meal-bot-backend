@@ -80,7 +80,9 @@ public class ChatService {
                 .map(m -> new AiDto.MessageDto(m.getRole(), m.getContent()))
                 .toList();
 
-        AiDto.Response aiResponse = aiClient.ask(userMessage, history);
+        // [임시 테스트용] Python 서버 연결 후 아래 주석 해제 후 에코 라인 제거
+        // AiDto.Response aiResponse = aiClient.ask(userMessage, history);   // AI 연결시
+        AiDto.Response aiResponse = new AiDto.Response(userMessage, List.of());  // 테스트용, 최종 배포시 제거
 
         ChatMessage reply = chatMessageRepository.save(
                 ChatMessage.builder()
