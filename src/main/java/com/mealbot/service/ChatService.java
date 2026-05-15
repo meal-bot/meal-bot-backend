@@ -80,9 +80,8 @@ public class ChatService {
                 .map(m -> new AiDto.MessageDto(m.getRole(), m.getContent()))
                 .toList();
 
-        // [임시 테스트용] Python 서버 연결 후 아래 주석 해제 후 에코 라인 제거
-        // AiDto.Response aiResponse = aiClient.ask(userMessage, history);   // AI 연결시
-        AiDto.Response aiResponse = new AiDto.Response(userMessage, List.of());  // 테스트용, 최종 배포시 제거
+        // [임시 테스트용] AiDto.Response aiResponse = new AiDto.Response(userMessage, List.of());
+        AiDto.Response aiResponse = aiClient.ask(userMessage, history);
 
         ChatMessage reply = chatMessageRepository.save(
                 ChatMessage.builder()
@@ -90,7 +89,7 @@ public class ChatService {
 
         return new ChatDto.SendResponse(reply.getId(), aiResponse.getAnswer(), aiResponse.getResults());
     }
-
+    
     /**
      * 비로그인 게스트의 메시지를 처리한다.
      * 히스토리는 프론트엔드가 관리하며 messages 배열로 전달받는다. DB 저장 없음.
