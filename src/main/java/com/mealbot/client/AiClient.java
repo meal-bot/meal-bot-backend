@@ -1,26 +1,26 @@
 package com.mealbot.client;
 
+import com.mealbot.dto.AiDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import com.mealbot.dto.AiDto;
-import java.util.List;
 
+/**
+ * Python AI 서버 v0.3 /chat 엔드포인트 호출 클라이언트.
+ *
+ * v0.2 /recommend는 폐기. 모든 대화 흐름(추천, 슬롯 채우기, refine, 정보 질문)은 /chat 단일 엔드포인트로 통합.
+ * 흐름 제어와 상태 관리는 AI 서버의 ChatOrchestrator가 담당.
+ */
 @Component
 public class AiClient {
 
-    private static final String RECOMMEND_PATH = "/recommend";
+    private static final String CHAT_PATH = "/chat";
 
     private final RestClient restClient;
-    private final int recommendationLimit;
-    private final String recommendationMode;
 
-    public AiClient(
-            @Value("${ai.server.url}") String aiServerUrl,
-            @Value("${ai.recommendation.limit}") int recommendationLimit,
-            @Value("${ai.recommendation.mode}") String recommendationMode) {
+    public AiClient(@Value("${ai.server.url}") String aiServerUrl) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(10_000);
         factory.setReadTimeout(60_000);
@@ -29,21 +29,19 @@ public class AiClient {
                 .baseUrl(aiServerUrl)
                 .requestFactory(factory)
                 .build();
-        this.recommendationLimit = recommendationLimit;
-        this.recommendationMode = recommendationMode;
     }
 
     /**
-     * Python AI 서버에 레시피 추천 요청을 전송하고 응답을 반환한다.
+     * Python AI 서버에 chat 요청을 전송하고 응답을 반환한다.
      *
-     * @param query    현재 사용자 메시지 (RAG 검색 키워드로 사용)
-     * @param messages 최근 대화 히스토리 (Python이 대화 맥락 유지에 활용)
+     * @param request v0.3 ChatRequest (session_id, turn_id, message, history, slots, last_recommendations)
+     * @return v0.3 ChatResponse (turn_id, intent, answer, slots_updated, recommendations, flags)
      */
-    public AiDto.Response ask(String query, List<AiDto.MessageDto> messages) {
+    public AiDto.Response chat(AiDto.Request request) {
         return restClient.post()
-                .uri(RECOMMEND_PATH)
+                .uri(CHAT_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new AiDto.Request(query, recommendationLimit, recommendationMode, messages))
+                .body(request)
                 .retrieve()
                 .body(AiDto.Response.class);
     }
