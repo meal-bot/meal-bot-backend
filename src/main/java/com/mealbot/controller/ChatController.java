@@ -25,14 +25,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.createChat(user));
     }
 
-    /** POST /api/chat/guest/sendMessage — 2. 비로그인 메시지 전송 */
-    @PostMapping("/guest/sendMessage")
-    public ResponseEntity<ChatDto.GuestSendResponse> sendMessageToGuest(
-            @RequestBody ChatDto.GuestSendRequest request) {
-        return ResponseEntity.ok(chatService.sendGuest(request));
-    }
-
-    /** POST /api/chat/{chatId}/sendMessage — 3. 메시지 전송 + AI 응답 */
+    /** POST /api/chat/{chatId}/sendMessage — 2. 메시지 전송 + AI 응답 */
     @PostMapping("/{chatId}/sendMessage")
     public ResponseEntity<ChatDto.SendResponse> sendMessage(
             @AuthenticationPrincipal User user,
@@ -41,14 +34,14 @@ public class ChatController {
         return ResponseEntity.ok(chatService.send(user, chatId, request));
     }
 
-    /** GET /api/chat — 4. 내 채팅 목록 조회 (사이드바) */
+    /** GET /api/chat — 3. 내 채팅 목록 조회 (사이드바) */
     @GetMapping
     public ResponseEntity<List<ChatDto.ChatResponse>> getChats(
             @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(chatService.getChats(user));
     }
 
-    /** GET /api/chat/{chatId} — 5. 특정 채팅의 전체 메시지 조회 */
+    /** GET /api/chat/{chatId} — 4. 특정 채팅의 전체 메시지 조회 */
     @GetMapping("/{chatId}")
     public ResponseEntity<ChatDto.ChatDetailResponse> getMessages(
             @AuthenticationPrincipal User user,
@@ -56,7 +49,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getChat(user, chatId));
     }
 
-    /** DELETE /api/chat/{chatId} — 6. 채팅 삭제 */
+    /** DELETE /api/chat/{chatId} — 5. 채팅 삭제 */
     @DeleteMapping("/{chatId}")
     public ResponseEntity<Map<String, Boolean>> deleteChat(
             @AuthenticationPrincipal User user,
