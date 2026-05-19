@@ -80,12 +80,15 @@ public class ChatService {
                 .map(m -> new AiDto.MessageDto(m.getRole(), m.getContent()))
                 .toList();
 
-        // [임시 테스트용] AiDto.Response aiResponse = new AiDto.Response(userMessage, List.of());
-        AiDto.Response aiResponse = aiClient.ask(userMessage, history);
+        // [임시 테스트용]
+        AiDto.Response aiResponse = new AiDto.Response(userMessage, List.<AiDto.RecipeResult>of());
+//        AiDto.Response aiResponse = aiClient.ask(userMessage, history);
 
+        List<AiDto.RecipeResult> results = aiResponse.getResults();
         ChatMessage reply = chatMessageRepository.save(
                 ChatMessage.builder()
-                        .chat(chat).role(ChatMessage.ROLE_ASSISTANT).content(aiResponse.getAnswer()).build());
+                        .chat(chat).role(ChatMessage.ROLE_ASSISTANT).content(aiResponse.getAnswer())
+                        .hasRecommendation(results != null && !results.isEmpty()).build());
 
         return new ChatDto.SendResponse(reply.getId(), aiResponse.getAnswer(), aiResponse.getResults());
     }

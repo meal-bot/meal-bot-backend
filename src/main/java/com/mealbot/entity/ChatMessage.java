@@ -35,4 +35,8 @@ public class ChatMessage {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean hasRecommendation = false;
 }

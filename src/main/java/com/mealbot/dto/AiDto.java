@@ -31,7 +31,7 @@ public class AiDto {
     /** Python AI 서버 /recommend 응답 객체 */
     @Getter
     @NoArgsConstructor
-    //@AllArgsConstructor // [임시 테스트용] Python 서버 연결 후 제거
+    @AllArgsConstructor // [임시 테스트용] Python 서버 연결 후 제거
     public static class Response {
         private String answer;              // AI 생성 답변 텍스트
         private List<RecipeResult> results; // 추천 레시피 목록
