@@ -11,6 +11,7 @@ import com.mealbot.repository.ChatMessageRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,12 +38,13 @@ public class CalendarService {
                         (existing, replacement) -> existing
                 ));
 
+        ZoneOffset kst = ZoneOffset.of("+09:00");
         return lastPerChat.values().stream()
                 .map(m -> new CalendarDto.Response(
                         m.getChat().getId(),
                         m.getChat().getTitle(),
                         m.getContent(),
-                        m.getCreatedAt()
+                        m.getCreatedAt().atOffset(kst)
                 ))
                 .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .toList();

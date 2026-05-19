@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -94,7 +94,7 @@ public class ChatDto {
     public static class ChatResponse {
         private Long chatId;
         private String title;
-        private LocalDateTime createdAt;
+        private OffsetDateTime createdAt;
     }
 
     /** 메시지 단건 응답. recommendations는 assistant 메시지에만 존재, 없으면 빈 리스트. */
@@ -104,7 +104,7 @@ public class ChatDto {
         private Long messageId;
         private String role;
         private String content;
-        private LocalDateTime createdAt;
+        private OffsetDateTime createdAt;
         private List<Recommendation> recommendations;
     }
 
@@ -114,7 +114,7 @@ public class ChatDto {
     public static class ChatDetailResponse {
         private Long chatId;
         private String title;
-        private LocalDateTime createdAt;
+        private OffsetDateTime createdAt;
         private List<ChatMessageResponse> messages;
     }
 

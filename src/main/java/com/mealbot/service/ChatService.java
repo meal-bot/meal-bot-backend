@@ -15,6 +15,8 @@ import com.mealbot.entity.User;
 import com.mealbot.repository.ChatMessageRepository;
 import com.mealbot.repository.ChatRepository;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 
@@ -71,7 +73,7 @@ public class ChatService {
                 .map((m) -> this.toChatMessageResponse(m))
                 .toList();
 
-        return new ChatDto.ChatDetailResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt(), messages);
+        return new ChatDto.ChatDetailResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt().atOffset(KST), messages);
     }
 
     /**
@@ -217,8 +219,10 @@ public class ChatService {
                 : content;
     }
 
+    private static final ZoneOffset KST = ZoneOffset.of("+09:00");
+
     private ChatDto.ChatResponse toChatResponse(Chat chat) {
-        return new ChatDto.ChatResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt());
+        return new ChatDto.ChatResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt().atOffset(KST));
     }
 
     private ChatDto.ChatMessageResponse toChatMessageResponse(ChatMessage message) {
@@ -230,7 +234,7 @@ public class ChatService {
                 message.getId(),
                 message.getRole(),
                 message.getContent(),
-                message.getCreatedAt(),
+                message.getCreatedAt().atOffset(KST),
                 recommendations
         );
     }

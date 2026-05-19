@@ -3,7 +3,7 @@ package com.mealbot.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class CalendarDto {
 
@@ -13,6 +13,6 @@ public class CalendarDto {
         private Long chatId;
         private String title;
         private String lastRecommendation;
-        private LocalDateTime createdAt;
+        private OffsetDateTime createdAt;
     }
 }
