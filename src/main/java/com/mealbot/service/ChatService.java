@@ -153,11 +153,8 @@ public class ChatService {
         chat.setPurpose(updatedSlots.purpose());
         chat.setFreeText(updatedSlots.freeText());
 
-        // 8-2. assistant 메시지 저장 (content=answer, recommendations_json=직렬화)
-        List<AiDto.LastRecommendation> newLastRecs = aiResponse.recommendations().stream()
-                .map(rec -> new AiDto.LastRecommendation(rec.recipeId(), rec.name()))
-                .toList();
-        String recommendationsJson = serializeLastRecommendations(newLastRecs);
+        // 8-2. assistant 메시지 저장 (content=answer, recommendations_json=전체 저장)
+        String recommendationsJson = serializeRecommendations(aiResponse.recommendations());
 
         ChatMessage savedAssistant = chatMessageRepository.save(ChatMessage.builder()
                 .chat(chat)
@@ -225,11 +222,16 @@ public class ChatService {
     }
 
     private ChatDto.ChatMessageResponse toChatMessageResponse(ChatMessage message) {
+        List<ChatDto.Recommendation> recommendations = deserializeRecommendations(message.getRecommendationsJson())
+                .stream()
+                .map(r -> new ChatDto.Recommendation(r.recipeId(), r.name(), r.cookingTime(), r.summary(), r.mainIngredients(), r.reason()))
+                .toList();
         return new ChatDto.ChatMessageResponse(
                 message.getId(),
                 message.getRole(),
                 message.getContent(),
-                message.getCreatedAt()
+                message.getCreatedAt(),
+                recommendations
         );
     }
 
@@ -329,7 +331,32 @@ public class ChatService {
                 .stream()
                 .filter(m -> ChatMessage.ROLE_ASSISTANT.equals(m.getRole()))
                 .findFirst()
-                .map(m -> deserializeLastRecommendations(m.getRecommendationsJson()))
+                .map(m -> deserializeRecommendations(m.getRecommendationsJson()).stream()
+                        .map(r -> new AiDto.LastRecommendation(r.recipeId(), r.name()))
+                        .toList())
                 .orElse(List.of());
+    }
+
+    private String serializeRecommendations(List<AiDto.Recommendation> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(list);
+        } catch (tools.jackson.core.JacksonException e) {
+            throw new IllegalStateException("recommendations 직렬화 실패", e);
+        }
+    }
+
+    private List<AiDto.Recommendation> deserializeRecommendations(String json) {
+        if (json == null || json.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<AiDto.Recommendation>>() {});
+        } catch (tools.jackson.core.JacksonException e) {
+            log.warn("recommendations 역직렬화 실패, 빈 리스트로 처리. json={}", json, e);
+            return List.of();
+        }
     }
 }

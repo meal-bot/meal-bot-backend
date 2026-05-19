@@ -97,7 +97,7 @@ public class ChatDto {
         private LocalDateTime createdAt;
     }
 
-    /** 메시지 단건 응답. */
+    /** 메시지 단건 응답. recommendations는 assistant 메시지에만 존재, 없으면 빈 리스트. */
     @Getter
     @AllArgsConstructor
     public static class ChatMessageResponse {
@@ -105,6 +105,7 @@ public class ChatDto {
         private String role;
         private String content;
         private LocalDateTime createdAt;
+        private List<Recommendation> recommendations;
     }
 
     /** 채팅 상세 조회 응답 (이전 대화 복원용). */
