@@ -85,6 +85,7 @@ public class SecurityConfig {
                     ).permitAll()
                     // 위에서 허용한 경로 외 나머지 모든 요청은 인증 필수
                     .anyRequest().authenticated()
+//                    .anyRequest().permitAll()  // 개발용: 인증 없이 전체 허용 (운영 배포 전 반드시 위 줄로 복구)
             )
 
             // ── OAuth2 로그인 설정 ──────────────────────────────────────────────────
