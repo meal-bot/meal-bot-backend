@@ -219,7 +219,7 @@ public class ChatService {
                 : content;
     }
 
-    private static final ZoneOffset KST = ZoneOffset.of("+09:00");
+    private static final ZoneOffset KST = ZoneOffset.UTC;
 
     private ChatDto.ChatResponse toChatResponse(Chat chat) {
         return new ChatDto.ChatResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt().atOffset(KST));
