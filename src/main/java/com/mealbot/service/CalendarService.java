@@ -26,7 +26,7 @@ public class CalendarService {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
         List<ChatMessage> messages = chatMessageRepository
-                .findByChatUserAndRoleAndHasRecommendationTrueAndCreatedAtBetweenOrderByCreatedAtDesc(
+                .findByChatUserAndRoleAndRecommendationsJsonIsNotNullAndCreatedAtBetweenOrderByCreatedAtDesc(
                         user, ChatMessage.ROLE_ASSISTANT, start, end);
 
         // 채팅별 마지막 추천 메시지 1개씩 추출 (DESC 정렬이므로 첫 번째 = 최신)

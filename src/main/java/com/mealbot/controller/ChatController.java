@@ -32,16 +32,16 @@ public class ChatController {
         return ResponseEntity.ok(chatService.createChat(user));
     }
 
-    /** POST /api/chat/guest/sendMessage — 2. 비로그인 메시지 전송 */
-    @Operation(summary = "게스트 메시지 전송", description = "비로그인 사용자의 메시지를 처리합니다. DB 저장 없음.")
-    @ApiResponse(responseCode = "200", description = "AI 응답 텍스트 및 추천 레시피 반환")
-    @PostMapping("/guest/sendMessage")
-    public ResponseEntity<ChatDto.GuestSendResponse> sendMessageToGuest(
-            @RequestBody ChatDto.GuestSendRequest request) {
-        return ResponseEntity.ok(chatService.sendGuest(request));
-    }
+    // /** POST /api/chat/guest/sendMessage — 게스트 메시지 전송 (v0.3 비활성화, 추후 보완 예정) */
+    // @Operation(summary = "게스트 메시지 전송", description = "비로그인 사용자의 메시지를 처리합니다. DB 저장 없음.")
+    // @ApiResponse(responseCode = "200", description = "AI 응답 텍스트 및 추천 레시피 반환")
+    // @PostMapping("/guest/sendMessage")
+    // public ResponseEntity<ChatDto.GuestSendResponse> sendMessageToGuest(
+    //         @RequestBody ChatDto.GuestSendRequest request) {
+    //     return ResponseEntity.ok(chatService.sendGuest(request));
+    // }
 
-    /** POST /api/chat/{chatId}/sendMessage — 3. 메시지 전송 + AI 응답 */
+    /** POST /api/chat/{chatId}/sendMessage — 2. 메시지 전송 + AI 응답 */
     @Operation(summary = "메시지 전송 및 AI 응답", description = "사용자 메시지를 저장하고 AI 응답을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "AI 응답 텍스트 및 추천 레시피 반환")
     @PostMapping("/{chatId}/sendMessage")
@@ -52,7 +52,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.send(user, chatId, request));
     }
 
-    /** GET /api/chat — 4. 내 채팅 목록 조회 (사이드바) */
+    /** GET /api/chat — 3. 내 채팅 목록 조회 (사이드바) */
     @Operation(summary = "내 채팅 목록 조회", description = "사이드바용 채팅 세션 목록을 최신순으로 반환합니다.")
     @ApiResponse(responseCode = "200", description = "채팅 세션 목록 반환")
     @GetMapping
@@ -61,7 +61,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getChats(user));
     }
 
-    /** GET /api/chat/{chatId} — 5. 특정 채팅의 전체 메시지 조회 */
+    /** GET /api/chat/{chatId} — 4. 특정 채팅의 전체 메시지 조회 */
     @Operation(summary = "채팅 상세 조회", description = "특정 채팅 세션의 전체 메시지 목록을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "채팅 세션 및 메시지 목록 반환")
     @GetMapping("/{chatId}")
@@ -71,7 +71,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getChat(user, chatId));
     }
 
-    /** DELETE /api/chat/{chatId} — 6. 채팅 삭제 */
+    /** DELETE /api/chat/{chatId} — 5. 채팅 삭제 */
     @Operation(summary = "채팅 삭제", description = "채팅 세션과 하위 메시지를 모두 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "삭제 성공 여부 반환")
     @DeleteMapping("/{chatId}")
