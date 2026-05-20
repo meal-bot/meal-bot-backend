@@ -38,7 +38,7 @@ public class CalendarService {
                         (existing, replacement) -> existing
                 ));
 
-        ZoneOffset kst = ZoneOffset.UTC;
+        ZoneOffset kst = ZoneOffset.ofHours(9);
         return lastPerChat.values().stream()
                 .map(m -> new CalendarDto.Response(
                         m.getChat().getId(),

@@ -15,7 +15,6 @@ import com.mealbot.entity.User;
 import com.mealbot.repository.ChatMessageRepository;
 import com.mealbot.repository.ChatRepository;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
@@ -219,7 +218,7 @@ public class ChatService {
                 : content;
     }
 
-    private static final ZoneOffset KST = ZoneOffset.UTC;
+    private static final ZoneOffset KST = ZoneOffset.ofHours(9);
 
     private ChatDto.ChatResponse toChatResponse(Chat chat) {
         return new ChatDto.ChatResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt().atOffset(KST));
@@ -292,32 +291,6 @@ public class ChatService {
             return delta;
         }
         return existing + FREE_TEXT_DELIMITER + delta;
-    }
-
-    private String serializeLastRecommendations(List<AiDto.LastRecommendation> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        try {
-            return objectMapper.writeValueAsString(list);
-        } catch (tools.jackson.core.JacksonException e) {
-            throw new IllegalStateException("lastRecommendations 직렬화 실패", e);
-        }
-    }
-
-    private List<AiDto.LastRecommendation> deserializeLastRecommendations(String json) {
-        if (json == null || json.isBlank()) {
-            return List.of();
-        }
-        try {
-            return objectMapper.readValue(
-                    json,
-                    new TypeReference<List<AiDto.LastRecommendation>>() {}
-            );
-        } catch (tools.jackson.core.JacksonException e) {
-            log.warn("lastRecommendations 역직렬화 실패, 빈 리스트로 처리. json={}", json, e);
-            return List.of();
-        }
     }
 
     private List<AiDto.Message> loadRecentHistory(Chat chat) {

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class InbodyDto {
 
@@ -50,11 +49,5 @@ public class InbodyDto {
         private BigDecimal bodyWater;
         private Integer visceralFat;
         private LocalDateTime measuredAt;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class InbodyListResponse {
-        private List<InbodyResponse> records;
     }
 }
