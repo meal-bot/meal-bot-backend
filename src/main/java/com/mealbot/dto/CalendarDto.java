@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public class CalendarDto {
 
@@ -12,7 +13,7 @@ public class CalendarDto {
     public static class Response {
         private Long chatId;
         private String title;
-        private String lastRecommendation;
+        private List<String> recommendations;
         private OffsetDateTime createdAt;
     }
 }

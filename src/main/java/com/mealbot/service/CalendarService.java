@@ -7,6 +7,7 @@ import com.mealbot.dto.CalendarDto;
 import com.mealbot.entity.ChatMessage;
 import com.mealbot.entity.User;
 import com.mealbot.repository.ChatMessageRepository;
+import com.mealbot.util.RecommendationUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,7 +44,9 @@ public class CalendarService {
                 .map(m -> new CalendarDto.Response(
                         m.getChat().getId(),
                         m.getChat().getTitle(),
-                        m.getContent(),
+                        RecommendationUtils.deserialize(m.getRecommendationsJson()).stream()
+                                .map(r -> r.name())
+                                .toList(),
                         m.getCreatedAt().atOffset(kst)
                 ))
                 .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))

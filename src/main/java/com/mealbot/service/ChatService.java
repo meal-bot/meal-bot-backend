@@ -1,7 +1,6 @@
 package com.mealbot.service;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import com.mealbot.util.RecommendationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,6 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final AiClient aiClient;
-    private final ObjectMapper objectMapper;
 
     /** 새 채팅 세션을 생성하고 기본 제목으로 저장한다. */
     @Transactional
@@ -69,7 +67,7 @@ public class ChatService {
 
         List<ChatDto.ChatMessageResponse> messages = chatMessageRepository
                 .findByChatOrderByCreatedAt(chat).stream()
-                .map((m) -> this.toChatMessageResponse(m))
+                .map(this::toChatMessageResponse)
                 .toList();
 
         return new ChatDto.ChatDetailResponse(chat.getId(), chat.getTitle(), chat.getCreatedAt().atOffset(KST), messages);
@@ -155,7 +153,7 @@ public class ChatService {
         chat.setFreeText(updatedSlots.freeText());
 
         // 8-2. assistant 메시지 저장 (content=answer, recommendations_json=전체 저장)
-        String recommendationsJson = serializeRecommendations(aiResponse.recommendations());
+        String recommendationsJson = RecommendationUtils.serialize(aiResponse.recommendations());
 
         ChatMessage savedAssistant = chatMessageRepository.save(ChatMessage.builder()
                 .chat(chat)
@@ -225,7 +223,7 @@ public class ChatService {
     }
 
     private ChatDto.ChatMessageResponse toChatMessageResponse(ChatMessage message) {
-        List<ChatDto.Recommendation> recommendations = deserializeRecommendations(message.getRecommendationsJson())
+        List<ChatDto.Recommendation> recommendations = RecommendationUtils.deserialize(message.getRecommendationsJson())
                 .stream()
                 .map(r -> new ChatDto.Recommendation(r.recipeId(), r.name(), r.cookingTime(), r.summary(), r.mainIngredients(), r.reason()))
                 .toList();
@@ -308,32 +306,10 @@ public class ChatService {
                 .stream()
                 .filter(m -> ChatMessage.ROLE_ASSISTANT.equals(m.getRole()))
                 .findFirst()
-                .map(m -> deserializeRecommendations(m.getRecommendationsJson()).stream()
+                .map(m -> RecommendationUtils.deserialize(m.getRecommendationsJson()).stream()
                         .map(r -> new AiDto.LastRecommendation(r.recipeId(), r.name()))
                         .toList())
                 .orElse(List.of());
     }
 
-    private String serializeRecommendations(List<AiDto.Recommendation> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        try {
-            return objectMapper.writeValueAsString(list);
-        } catch (tools.jackson.core.JacksonException e) {
-            throw new IllegalStateException("recommendations 직렬화 실패", e);
-        }
-    }
-
-    private List<AiDto.Recommendation> deserializeRecommendations(String json) {
-        if (json == null || json.isBlank()) {
-            return List.of();
-        }
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<AiDto.Recommendation>>() {});
-        } catch (tools.jackson.core.JacksonException e) {
-            log.warn("recommendations 역직렬화 실패, 빈 리스트로 처리. json={}", json, e);
-            return List.of();
-        }
-    }
 }
