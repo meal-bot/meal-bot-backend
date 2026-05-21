@@ -87,7 +87,8 @@ public class ChatService {
      *  8. 응답 반영: Chat 슬롯 업데이트 + assistant 메시지 저장 + SendResponse 반환
      *
      * v0.3 정책 메모:
-     *  - free_text 누적은 v0.3 단계에서 적용 안 함. AI 서버가 받은 그대로 돌려주는 값을 그대로 덮어씀.
+     *  - free_text 누적: recommend/refine intent일 때만 AI 응답 delta를 기존 freeText에 append.
+     *    ask/slot_fill intent는 freeText 변경 없음 (QA 질문이 추천 조건을 오염하지 않도록).
      *  - session_id = chat PK, turn_id = user 메시지 PK (디버깅 + 로깅 추적용)
      *  - AI 호출 실패 시: user 메시지는 보존, assistant fallback 메시지 저장, isFallback=true 응답.
      */
@@ -146,11 +147,15 @@ public class ChatService {
         }
 
         // 8. 응답 반영
-        // 8-1. Chat 슬롯 업데이트 (v0.3: AI 응답을 그대로 덮어쓰기)
+        // 8-1. Chat 슬롯 업데이트
         AiDto.Slots updatedSlots = aiResponse.slotsUpdated();
         chat.setMealTimes(formatMealTimes(updatedSlots.mealTimes()));
         chat.setPurpose(updatedSlots.purpose());
-        chat.setFreeText(updatedSlots.freeText());
+        // [파트너 요청] recommend/refine만 누적, ask/slot_fill은 유지 (QA 질문의 추천 조건 오염 방지)
+        String intent = aiResponse.intent();
+        if ("recommend".equals(intent) || "refine".equals(intent)) {
+            chat.setFreeText(appendFreeText(chat.getFreeText(), updatedSlots.freeText()));
+        }
 
         // 8-2. assistant 메시지 저장 (content=answer, recommendations_json=전체 저장)
         String recommendationsJson = RecommendationUtils.serialize(aiResponse.recommendations());
@@ -177,7 +182,8 @@ public class ChatService {
         ChatDto.Flags clientFlags = new ChatDto.Flags(
                 aiResponse.flags().needsMoreSlots(),
                 aiResponse.flags().outOfScope(),
-                aiResponse.flags().isFallback()
+                aiResponse.flags().isFallback(),
+                aiResponse.flags().refused()  // [파트너 요청] refused 필드 추가
         );
 
         return new ChatDto.SendResponse(
@@ -246,7 +252,7 @@ public class ChatService {
                 .recommendationsJson(null)
                 .build());
 
-        ChatDto.Flags fallbackFlags = new ChatDto.Flags(false, false, true);
+        ChatDto.Flags fallbackFlags = new ChatDto.Flags(false, false, true, false);
 
         return new ChatDto.SendResponse(
                 savedAssistant.getId(),

@@ -57,16 +57,18 @@ public class ChatDto {
     ) {}
 
     /**
-     * 응답 플래그 3종.
+     * 응답 플래그.
      *
      * @param needsMoreSlots true이면 추가 슬롯 입력 필요 UX
      * @param outOfScope     true이면 서비스 범위 밖 안내
      * @param isFallback     true이면 내부 fallback 경로
+     * @param refused        true이면 AI가 답변을 거부한 경우 (건강/질병/알레르기 안전 판단 등)
      */
     public record Flags(
             boolean needsMoreSlots,
             boolean outOfScope,
-            boolean isFallback
+            boolean isFallback,
+            boolean refused  // [파트너 요청] AiDto.Flags와 동일, 클라이언트 노출용
     ) {}
 
     /**
@@ -75,7 +77,7 @@ public class ChatDto {
      * @param messageId       Spring DB에 저장된 assistant 메시지 PK
      * @param intent          최종 분류 의도 (recommend|slot_fill|refine|ask)
      * @param answer          사용자에게 보여줄 응답 텍스트
-     * @param recommendations 추천 결과 (0개 또는 2개)
+     * @param recommendations 추천 결과 (slot_fill/ask: 0개, recommend: 2개, refine: 1~2개)
      * @param flags           응답 플래그 3종
      */
     public record SendResponse(

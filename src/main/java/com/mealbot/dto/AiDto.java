@@ -73,12 +73,13 @@ public class AiDto {
     ) {}
 
     /**
-     * 응답 플래그 3종. 모두 필수.
+     * 응답 플래그. 모두 필수.
      */
     public record Flags(
             @JsonProperty("needs_more_slots") boolean needsMoreSlots,
             @JsonProperty("out_of_scope") boolean outOfScope,
-            @JsonProperty("is_fallback") boolean isFallback
+            @JsonProperty("is_fallback") boolean isFallback,
+            boolean refused  // [파트너 요청] AI가 건강/질병/알레르기 질문 거부 시 true
     ) {}
 
     /**
@@ -113,8 +114,8 @@ public class AiDto {
      * @param intent          최종 분류된 의도 (recommend|slot_fill|refine|ask)
      * @param answer          사용자에게 보여줄 응답 문자열 (필수, 빈 문자열 금지)
      * @param slotsUpdated    갱신 후 전체 슬롯 스냅샷
-     * @param recommendations 추천 결과 (0개 또는 2개)
-     * @param flags           응답 플래그 3종
+     * @param recommendations 추천 결과 (slot_fill/ask: 0개, recommend: 2개, refine: 1~2개)
+     * @param flags           응답 플래그
      */
     public record Response(
             @JsonProperty("turn_id") String turnId,
