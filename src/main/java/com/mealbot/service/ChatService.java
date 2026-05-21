@@ -138,8 +138,9 @@ public class ChatService {
         AiDto.Response aiResponse;
         try {
             aiResponse = aiClient.chat(aiRequest);
-            log.info("AI 응답: intent={} recommendations={} flags={}",
-                    aiResponse.intent(), aiResponse.recommendations().size(), aiResponse.flags());
+            log.info("AI 응답: intent={} recommendations={} flags={} slotsUpdated.freeText='{}'",
+                    aiResponse.intent(), aiResponse.recommendations().size(), aiResponse.flags(),
+                    aiResponse.slotsUpdated() != null ? aiResponse.slotsUpdated().freeText() : "N/A");
         } catch (Exception e) {
             log.error("AI 호출 실패. session_id={} turn_id={} error={}",
                     sessionId, turnId, e.getMessage(), e);
