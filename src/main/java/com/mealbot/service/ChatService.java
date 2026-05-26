@@ -26,8 +26,8 @@ public class ChatService {
     private static final String DEFAULT_CHAT_TITLE = "새 채팅";
     private static final int CHAT_TITLE_MAX_LENGTH = 20;
 
-    /** v0.3 명세: 최근 메시지 6개 (왕복 3회 = user 3 + assistant 3) */
-    private static final int HISTORY_WINDOW_SIZE = 6;
+    /** 슬라이딩 윈도우: 최근 메시지 50개 (왕복 25회 = user 25 + assistant 25) */
+    private static final int HISTORY_WINDOW_SIZE = 50;
 
     /** freeText 누적 시 사용할 구분자 (공백). retrieval query에 자연어로 들어감. */
     private static final String FREE_TEXT_DELIMITER = " ";
@@ -100,7 +100,7 @@ public class ChatService {
 
         String userMessage = request.getContent();
 
-        // 2. 슬라이딩 윈도우 history 로드 (user 메시지 저장 전, 이전 턴까지만 포함)
+        // 2. 슬라이딩 윈도우 history 로드 (최근 50개, user 메시지 저장 전 이전 턴까지만 포함)
         List<AiDto.Message> history = loadRecentHistory(chat);
 
         // 3. 직전 assistant 메시지에서 last_recommendations 추출
@@ -300,7 +300,7 @@ public class ChatService {
 
     private List<AiDto.Message> loadRecentHistory(Chat chat) {
         return chatMessageRepository
-                .findTop6ByChatOrderByCreatedAtDesc(chat)
+                .findTop50ByChatOrderByCreatedAtDesc(chat)
                 .stream()
                 .sorted(Comparator.comparing(ChatMessage::getCreatedAt))
                 .map(m -> new AiDto.Message(m.getRole(), m.getContent()))
@@ -309,7 +309,7 @@ public class ChatService {
 
     private List<AiDto.LastRecommendation> loadLastRecommendations(Chat chat) {
         return chatMessageRepository
-                .findTop6ByChatOrderByCreatedAtDesc(chat)
+                .findTop50ByChatOrderByCreatedAtDesc(chat)
                 .stream()
                 .filter(m -> ChatMessage.ROLE_ASSISTANT.equals(m.getRole()))
                 .findFirst()

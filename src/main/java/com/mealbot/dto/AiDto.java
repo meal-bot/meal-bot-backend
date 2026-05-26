@@ -85,13 +85,13 @@ public class AiDto {
     /**
      * POST /chat 요청 바디.
      *
-     * Spring이 슬라이딩 윈도우(메시지 6개)로 history 전달.
+     * Spring이 슬라이딩 윈도우(메시지 50개)로 history 전달.
      * slots.freeText는 Spring 누적. lastRecommendations는 직전 턴만.
      *
      * @param sessionId          세션 식별자 (1~100자)
      * @param turnId             턴 식별자 (1~100자)
      * @param message            이번 턴 사용자 발화 (1~500자)
-     * @param history            최근 메시지 6개 (user 3 + assistant 3)
+     * @param history            최근 메시지 50개 (user 25 + assistant 25)
      * @param slots              현재 슬롯 스냅샷
      * @param lastRecommendations 직전 턴 추천 목록 (없으면 빈 리스트)
      */
