@@ -3,5 +3,6 @@
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)"
     ]
-  }
+  },
+  "outputStyle": "Learning"
 }
