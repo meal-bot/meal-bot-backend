@@ -132,7 +132,8 @@ public class ChatService {
                 lastRecommendations
         );
 
-        log.info("AI 호출: session_id={} turn_id={} message='{}'", sessionId, turnId, userMessage);
+        log.info("AI 호출: session_id={} turn_id={} historySize={} message='{}'",
+                sessionId, turnId, history.size(), userMessage);
 
         // 7. AI 호출 (실패 시 graceful fallback)
         AiDto.Response aiResponse;
