@@ -2,6 +2,7 @@ package com.mealbot.service;
 
 import com.mealbot.dto.ChatDto;
 import com.mealbot.entity.Chat;
+import com.mealbot.exception.GuestChatException;
 import com.mealbot.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

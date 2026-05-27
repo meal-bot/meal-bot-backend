@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 /**
- * 채팅 세션(Chat) 내 단건 메시지. role로 발화자(user/assistant)를 구분한다.
+ * 채팅(Chat) 내 단건 메시지. role로 발화자(user/assistant)를 구분한다.
  *
  * v0.3 변경: assistant 메시지에 그 턴의 추천 결과를 JSON으로 저장하는 컬럼 추가.
  * ChatService가 다음 턴 AI 호출 시 직전 assistant 메시지의 추천을 lastRecommendations로 전달.

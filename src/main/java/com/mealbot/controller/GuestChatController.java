@@ -1,7 +1,7 @@
 package com.mealbot.controller;
 
 import com.mealbot.dto.ChatDto;
-import com.mealbot.service.GuestChatException;
+import com.mealbot.exception.GuestChatException;
 import com.mealbot.service.GuestChatService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

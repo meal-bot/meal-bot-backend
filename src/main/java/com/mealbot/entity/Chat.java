@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 사용자의 채팅 세션 단위. 여러 개의 ChatMessage를 묶는 대화 컨테이너.
+ * 사용자의 채팅 하나를 나타낸다. 여러 개의 ChatMessage를 묶는 대화 컨테이너.
  *
  * v0.3 변경: 슬롯 상태(mealTimes, purpose, freeText) 누적 보관 필드 추가.
  * AI 호출 시 ChatRequest.slots로 전달.

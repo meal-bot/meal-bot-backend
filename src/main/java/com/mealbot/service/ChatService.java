@@ -42,7 +42,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final AiClient aiClient;
 
-    /** 새 채팅 세션을 생성하고 기본 제목으로 저장한다. */
+    /** 새 채팅을 생성하고 기본 제목으로 저장한다. */
     @Transactional
     public ChatDto.ChatResponse createChat(User user) {
         Chat chat = Chat.builder()
@@ -53,14 +53,14 @@ public class ChatService {
         return toChatResponse(chat);
     }
 
-    /** 사용자의 채팅 세션 목록을 최신순으로 반환한다. */
+    /** 사용자의 채팅 목록을 최신순으로 반환한다. */
     public List<ChatDto.ChatResponse> getChats(User user) {
         return chatRepository.findByUserOrderByCreatedAtDesc(user).stream()
                 .map((chat) -> this.toChatResponse(chat))
                 .toList();
     }
 
-    /** 특정 채팅 세션의 전체 메시지 히스토리를 반환한다. */
+    /** 특정 채팅의 전체 메시지 히스토리를 반환한다. */
     public ChatDto.ChatDetailResponse getChat(User user, Long chatId) {
         Chat chat = chatRepository.findByIdAndUser(chatId, user)
                 .orElseThrow(() -> new IllegalArgumentException("채팅을 찾을 수 없습니다: " + chatId));
@@ -205,7 +205,7 @@ public class ChatService {
         );
     }
 
-    /** 채팅 세션과 하위 메시지를 모두 삭제한다. */
+    /** 채팅과 하위 메시지를 모두 삭제한다. */
     @Transactional
     public void deleteChat(User user, Long chatId) {
         Chat chat = chatRepository.findByIdAndUser(chatId, user)

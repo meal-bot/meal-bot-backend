@@ -16,7 +16,7 @@ import com.mealbot.service.ChatService;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Chat", description = "채팅 세션 및 메시지 관련 API")
+@Tag(name = "Chat", description = "채팅 및 메시지 관련 API")
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
@@ -24,9 +24,9 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    /** POST /api/chat — 1. 새 채팅 스레드 생성 */
-    @Operation(summary = "새 채팅 세션 생성", description = "로그인 사용자의 새 채팅 스레드를 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "생성된 채팅 세션 정보 반환")
+    /** POST /api/chat - 1. 새 채팅 생성 */
+    @Operation(summary = "새 채팅 생성", description = "로그인 사용자의 새 채팅을 생성합니다.")
+    @ApiResponse(responseCode = "200", description = "생성된 채팅 정보 반환")
     @PostMapping
     public ResponseEntity<ChatDto.ChatResponse> createChat(
             @AuthenticationPrincipal User user) {
@@ -48,15 +48,15 @@ public class ChatController {
     @PostMapping("/{chatId}/sendMessage")
     public ResponseEntity<ChatDto.SendResponse> sendMessage(
             @AuthenticationPrincipal User user,
-            @Parameter(description = "채팅 세션 ID") @PathVariable Long chatId,
+            @Parameter(description = "채팅 ID") @PathVariable Long chatId,
             // [codex] 로그인 채팅과 게스트 임시 채팅에 동일한 메시지 입력 검증을 적용한다.
             @Valid @RequestBody ChatDto.SendRequest request) {
         return ResponseEntity.ok(chatService.send(user, chatId, request));
     }
 
     /** GET /api/chat — 3. 내 채팅 목록 조회 (사이드바) */
-    @Operation(summary = "내 채팅 목록 조회", description = "사이드바용 채팅 세션 목록을 최신순으로 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "채팅 세션 목록 반환")
+    @Operation(summary = "내 채팅 목록 조회", description = "사이드바용 채팅 목록을 최신순으로 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "채팅 목록 반환")
     @GetMapping
     public ResponseEntity<List<ChatDto.ChatResponse>> getChats(
             @AuthenticationPrincipal User user) {
@@ -64,22 +64,22 @@ public class ChatController {
     }
 
     /** GET /api/chat/{chatId} — 4. 특정 채팅의 전체 메시지 조회 */
-    @Operation(summary = "채팅 상세 조회", description = "특정 채팅 세션의 전체 메시지 목록을 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "채팅 세션 및 메시지 목록 반환")
+    @Operation(summary = "채팅 상세 조회", description = "특정 채팅의 전체 메시지 목록을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "채팅 및 메시지 목록 반환")
     @GetMapping("/{chatId}")
     public ResponseEntity<ChatDto.ChatDetailResponse> getMessages(
             @AuthenticationPrincipal User user,
-            @Parameter(description = "채팅 세션 ID") @PathVariable Long chatId) {
+            @Parameter(description = "채팅 ID") @PathVariable Long chatId) {
         return ResponseEntity.ok(chatService.getChat(user, chatId));
     }
 
     /** DELETE /api/chat/{chatId} — 5. 채팅 삭제 */
-    @Operation(summary = "채팅 삭제", description = "채팅 세션과 하위 메시지를 모두 삭제합니다.")
+    @Operation(summary = "채팅 삭제", description = "채팅과 하위 메시지를 모두 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "삭제 성공 여부 반환")
     @DeleteMapping("/{chatId}")
     public ResponseEntity<Map<String, Boolean>> deleteChat(
             @AuthenticationPrincipal User user,
-            @Parameter(description = "채팅 세션 ID") @PathVariable Long chatId) {
+            @Parameter(description = "채팅 ID") @PathVariable Long chatId) {
         chatService.deleteChat(user, chatId);
         return ResponseEntity.ok(Map.of("success", true));
     }
