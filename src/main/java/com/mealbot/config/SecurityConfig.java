@@ -77,9 +77,13 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
+                            // [codex] 공개 API의 검증 실패도 로그인 화면이 아닌 원래 오류 응답으로 반환한다.
+                            "/error",
 //                            "/api/signup",
 //                            "/api/login",
-                            "/api/chat/guest/sendMessage",
+                            // [codex] 게스트 채팅은 JWT 대신 외부에 노출되지 않는 HttpOnly 쿠키로 식별한다.
+                            "/api/chat/guest",
+                            "/api/chat/guest/**",
                             "/oauth2/**",
                             "/login/oauth2/**"
                     ).permitAll()

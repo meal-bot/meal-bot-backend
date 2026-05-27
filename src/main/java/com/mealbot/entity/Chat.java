@@ -27,7 +27,8 @@ public class Chat {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    // [codex] user가 null이면 게스트 임시 채팅이며, 로그인 채팅은 기존처럼 User를 가진다.
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false)
@@ -66,4 +67,13 @@ public class Chat {
      */
     @Column(name = "free_text", columnDefinition = "TEXT")
     private String freeText;
+
+    //// 게스트 용 ////
+    /** [codex] 브라우저에 발급한 불투명 게스트 쿠키 원문 대신 저장하는 SHA-256 해시값. */
+    @Column(name = "guest_token_hash", unique = true, length = 64)
+    private String guestTokenHash;
+
+    /** [codex] 마지막 활동 이후 게스트 채팅 접근을 차단하고 삭제 대상으로 삼을 만료 시각. */
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 }

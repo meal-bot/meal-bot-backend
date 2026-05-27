@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,8 @@ public class ChatController {
     public ResponseEntity<ChatDto.SendResponse> sendMessage(
             @AuthenticationPrincipal User user,
             @Parameter(description = "채팅 세션 ID") @PathVariable Long chatId,
-            @RequestBody ChatDto.SendRequest request) {
+            // [codex] 로그인 채팅과 게스트 임시 채팅에 동일한 메시지 입력 검증을 적용한다.
+            @Valid @RequestBody ChatDto.SendRequest request) {
         return ResponseEntity.ok(chatService.send(user, chatId, request));
     }
 

@@ -98,6 +98,15 @@ public class ChatService {
         Chat chat = chatRepository.findByIdAndUser(chatId, user)
                 .orElseThrow(() -> new IllegalArgumentException("채팅을 찾을 수 없습니다: " + chatId));
 
+        return processMessage(chat, request, chat.getId().toString());
+    }
+
+    /**
+     * [codex] 접근 권한이 이미 확인된 채팅의 단일 메시지를 저장하고 처리한다.
+     * 사용자 인증 및 게스트 채팅 소유권 확인은 호출 서비스가 담당하며,
+     * 로그인/게스트 모두 동일한 AI 히스토리·슬롯·추천 처리 흐름을 사용한다.
+     */
+    ChatDto.SendResponse processMessage(Chat chat, ChatDto.SendRequest request, String sessionId) {
         String userMessage = request.getContent();
 
         // 2. 슬라이딩 윈도우 history 로드 (최근 50개, user 메시지 저장 전 이전 턴까지만 포함)
@@ -120,7 +129,6 @@ public class ChatService {
                 .build());
 
         // 6. AiDto.Request 조립
-        String sessionId = chat.getId().toString();
         String turnId = savedUser.getId().toString();
 
         AiDto.Request aiRequest = new AiDto.Request(

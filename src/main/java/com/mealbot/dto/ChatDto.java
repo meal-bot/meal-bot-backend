@@ -3,6 +3,8 @@ package com.mealbot.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -32,8 +34,17 @@ public class ChatDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SendRequest {
+        // [codex] 로그인/게스트 모두 AI 호출 전에 빈 입력과 과도한 길이의 입력을 차단한다.
+        @NotBlank(message = "content must not be blank")
+        @Size(max = 500, message = "content must be 500 characters or fewer")
         private String content;
     }
+
+    // [codex] 게스트 채팅은 일회성이므로 프론트에는 만료 정보만 제공하고 쿠키 토큰은 노출하지 않는다.
+    public record GuestChatResponse(OffsetDateTime expiresAt) {}
+
+    // [codex] 프론트가 게스트 채팅 만료와 일반 AI 오류를 구분할 수 있도록 고정 오류 코드를 반환한다.
+    public record ErrorResponse(String code, String message) {}
 
     // ── 응답: 메시지 전송 (v0.3) ──────────────────────────────
 
