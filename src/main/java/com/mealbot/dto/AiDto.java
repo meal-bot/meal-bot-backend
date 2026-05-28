@@ -113,9 +113,11 @@ public class AiDto {
      * @param turnId          요청의 turnId와 동일
      * @param intent          최종 분류된 의도 (recommend|slot_fill|refine|ask)
      * @param answer          사용자에게 보여줄 응답 문자열 (필수, 빈 문자열 금지)
-     * @param slotsUpdated    갱신 후 전체 슬롯 스냅샷
+     * @param slotsUpdated    갱신 후 전체 슬롯 스냅샷 (free_text는 echo값이라 누적에 사용하지 말 것)
      * @param recommendations 추천 결과 (slot_fill/ask: 0개, recommend: 2개, refine: 1~2개)
      * @param flags           응답 플래그
+     * @param freeTextDelta   이번 턴에서 새로 추출된 자유 조건 조각. null이면 이번 턴에 조건 없음.
+     *                        누적은 Spring이 담당 (ChatService.appendFreeText).
      */
     public record Response(
             @JsonProperty("turn_id") String turnId,
@@ -123,6 +125,7 @@ public class AiDto {
             String answer,
             @JsonProperty("slots_updated") Slots slotsUpdated,
             List<Recommendation> recommendations,
-            Flags flags
+            Flags flags,
+            @JsonProperty("free_text_delta") String freeTextDelta
     ) {}
 }

@@ -147,9 +147,9 @@ public class ChatService {
         AiDto.Response aiResponse;
         try {
             aiResponse = aiClient.chat(aiRequest);
-            log.info("AI 응답: intent={} recommendations={} flags={} slotsUpdated.freeText='{}'",
+            log.info("AI 응답: intent={} recommendations={} flags={} freeTextDelta='{}'",
                     aiResponse.intent(), aiResponse.recommendations().size(), aiResponse.flags(),
-                    aiResponse.slotsUpdated() != null ? aiResponse.slotsUpdated().freeText() : "N/A");
+                    aiResponse.freeTextDelta());
         } catch (Exception e) {
             log.error("AI 호출 실패. session_id={} turn_id={} error={}",
                     sessionId, turnId, e.getMessage(), e);
@@ -162,9 +162,11 @@ public class ChatService {
         chat.setMealTimes(formatMealTimes(updatedSlots.mealTimes()));
         chat.setPurpose(updatedSlots.purpose());
         // [파트너 요청] recommend/refine만 누적, ask/slot_fill은 유지 (QA 질문의 추천 조건 오염 방지)
+        // slots_updated.free_text는 AI 서버가 echo하는 값이므로 사용하지 않음.
+        // 이번 턴 새 조각은 free_text_delta 별도 필드로 수신.
         String intent = aiResponse.intent();
         if ("recommend".equals(intent) || "refine".equals(intent)) {
-            chat.setFreeText(appendFreeText(chat.getFreeText(), updatedSlots.freeText()));
+            chat.setFreeText(appendFreeText(chat.getFreeText(), aiResponse.freeTextDelta()));
         }
 
         // 8-2. assistant 메시지 저장 (content=answer, recommendations_json=전체 저장)
