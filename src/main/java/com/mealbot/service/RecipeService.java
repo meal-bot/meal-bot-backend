@@ -50,8 +50,8 @@ public class RecipeService {
                 toNutrition(a.nutrition()),
                 toIngredientsStructured(a.ingredientsStructured()),
                 a.manuals().stream().map(RecipeService::toManual).toList(),
-                a.imgMain(),
-                a.imgThumb()
+                normalizeImageUrl(a.imgMain()),
+                normalizeImageUrl(a.imgThumb())
         );
     }
 
@@ -78,6 +78,14 @@ public class RecipeService {
     }
 
     private static RecipeDto.Manual toManual(AiRecipeDto.Manual m) {
-        return new RecipeDto.Manual(m.step(), m.desc(), m.img());
+        return new RecipeDto.Manual(m.step(), m.desc(), normalizeImageUrl(m.img()));
+    }
+
+    private static String normalizeImageUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+
+        return url.replaceFirst("^http://", "https://");
     }
 }
