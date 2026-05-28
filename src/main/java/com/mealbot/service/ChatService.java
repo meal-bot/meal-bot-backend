@@ -161,11 +161,12 @@ public class ChatService {
         AiDto.Slots updatedSlots = aiResponse.slotsUpdated();
         chat.setMealTimes(formatMealTimes(updatedSlots.mealTimes()));
         chat.setPurpose(updatedSlots.purpose());
-        // [파트너 요청] recommend/refine만 누적, ask/slot_fill은 유지 (QA 질문의 추천 조건 오염 방지)
         // slots_updated.free_text는 AI 서버가 echo하는 값이므로 사용하지 않음.
         // 이번 턴 새 조각은 free_text_delta 별도 필드로 수신.
+        // slot_fill 포함: 시간대/스타일 답하기 전 자유조건을 먼저 말하는 경우 슬롯 단계에서 버려지지 않도록.
+        // refine은 덮어쓰기 정책 확정 후 별도 추가.
         String intent = aiResponse.intent();
-        if ("recommend".equals(intent) || "refine".equals(intent)) {
+        if ("recommend".equals(intent) || "slot_fill".equals(intent)) {
             chat.setFreeText(appendFreeText(chat.getFreeText(), aiResponse.freeTextDelta()));
         }
 
