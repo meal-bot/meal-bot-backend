@@ -1,22 +1,29 @@
 package com.mealbot.client;
 
 import com.mealbot.dto.AiDto;
+import com.mealbot.dto.AiRecipeDto;
+import com.mealbot.exception.RecipeNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 /**
- * Python AI 서버 v0.3 /chat 엔드포인트 호출 클라이언트.
+ * Python AI 서버 호출 클라이언트.
  *
- * v0.2 /recommend는 폐기. 모든 대화 흐름(추천, 슬롯 채우기, refine, 정보 질문)은 /chat 단일 엔드포인트로 통합.
+ * 지원 엔드포인트:
+ * - POST /chat            : 대화/추천 (v0.3 단일 엔드포인트로 통합, /recommend는 폐기)
+ * - GET  /recipes/{id}    : 레시피 상세 조회 (모달용)
+ *
  * 흐름 제어와 상태 관리는 AI 서버의 ChatOrchestrator가 담당.
  */
 @Component
 public class AiClient {
 
     private static final String CHAT_PATH = "/chat";
+    private static final String RECIPES_PATH = "/recipes/{recipeId}";
 
     private final RestClient restClient;
 
@@ -44,5 +51,26 @@ public class AiClient {
                 .body(request)
                 .retrieve()
                 .body(AiDto.Response.class);
+    }
+
+    /**
+     * AI 서버에서 레시피 상세를 조회한다.
+     *
+     * 404는 도메인 예외(RecipeNotFoundException)로 변환하여 상위 레이어가 HTTP 라이브러리에
+     * 의존하지 않도록 한다. 5xx/타임아웃은 그대로 propagate — 컨트롤러에서 502로 처리.
+     *
+     * @param recipeId 조회할 레시피 id (AI 추천 응답의 recipe_id 그대로 전달, "28"/"recipe_28" 모두 허용)
+     * @return 레시피 상세 응답
+     * @throws RecipeNotFoundException recipe_id가 AI 서버에 존재하지 않을 때
+     */
+    public AiRecipeDto.Response getRecipe(String recipeId) {
+        try {
+            return restClient.get()
+                    .uri(RECIPES_PATH, recipeId)
+                    .retrieve()
+                    .body(AiRecipeDto.Response.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new RecipeNotFoundException(recipeId);
+        }
     }
 }

@@ -84,6 +84,8 @@ public class SecurityConfig {
                             // [codex] 게스트 채팅은 JWT 대신 외부에 노출되지 않는 HttpOnly 쿠키로 식별한다.
                             "/api/chat/guest",
                             "/api/chat/guest/**",
+                            // 레시피 상세 조회: 게스트도 추천 카드 클릭으로 모달을 열 수 있도록 공개.
+                            "/api/recipes/**",
                             "/oauth2/**",
                             "/login/oauth2/**"
                     ).permitAll()

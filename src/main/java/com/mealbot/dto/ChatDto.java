@@ -130,26 +130,4 @@ public class ChatDto {
         private OffsetDateTime createdAt;
         private List<ChatMessageResponse> messages;
     }
-
-    // ── 게스트 모드 (v0.3 비활성화, 추후 보완 예정) ──────────────
-
-    // /** 게스트 메시지 단건 (role + content). */
-    // @Getter @NoArgsConstructor @AllArgsConstructor
-    // public static class ChatMessageRequest {
-    //     private String role;
-    //     private String content;
-    // }
-
-    // /** POST /api/chat/guest/sendMessage 요청 바디. */
-    // @Getter @NoArgsConstructor @AllArgsConstructor
-    // public static class GuestSendRequest {
-    //     private List<ChatMessageRequest> messages;
-    // }
-
-    // /** POST /api/chat/guest/sendMessage 응답 바디. */
-    // @Getter @AllArgsConstructor
-    // public static class GuestSendResponse {
-    //     private String reply;
-    //     private List<AiDto.RecipeResult> results;
-    // }
 }
