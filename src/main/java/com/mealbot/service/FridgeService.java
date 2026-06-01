@@ -97,7 +97,8 @@ public class FridgeService {
         allIngredients.addAll(extras);
 
         String freeText = String.join(FREE_TEXT_DELIMITER, allIngredients);
-        String message = "냉장고에 " + String.join(", ", ingredients)
+        // message는 사용자에게 보이지 않는 LLM 입력 — preset/extras 구분 없이 합쳐서 자연어 문장 구성
+        String message = "냉장고에 " + String.join(", ", allIngredients)
                 + "이(가) 있어. 이걸로 만들 수 있는 메뉴를 추천해줘.";
 
         AiDto.Slots slots = new AiDto.Slots(ALL_MEAL_TIMES, DEFAULT_PURPOSE, freeText);

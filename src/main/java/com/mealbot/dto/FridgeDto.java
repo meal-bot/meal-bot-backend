@@ -1,5 +1,6 @@
 package com.mealbot.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -29,9 +30,13 @@ public class FridgeDto {
     /**
      * POST /api/fridge/recommend 요청 바디.
      *
-     * @param ingredients 프론트 칩으로 선택한 식재료 (1~30개)
+     * @param ingredients 프론트 칩으로 선택한 식재료 (0~30개). 사용자가 preset 없이 직접 입력만 한 경우 빈 배열.
      * @param extras      사용자가 직접 입력한 식재료 (0~10개, null 허용)
      * @param count       원하는 추천 개수 (현재 2 고정)
+     *
+     * 검증 규칙: ingredients + extras 합쳐서 최소 1개 이상 (AssertTrue로 강제).
+     * 두 리스트를 별도 필드로 두는 이유는 의미론적 분리(표준 재료 vs 사용자 입력)를 유지하기 위함이며,
+     * 합계 1개 조건은 클래스 레벨에서 hasAtLeastOneIngredient()로 검증한다.
      */
     @Getter
     @NoArgsConstructor
@@ -39,7 +44,7 @@ public class FridgeDto {
     public static class RecommendRequest {
 
         @NotNull(message = "ingredients는 필수입니다.")
-        @Size(min = 1, max = 30, message = "ingredients는 1~30개여야 합니다.")
+        @Size(max = 30, message = "ingredients는 최대 30개까지 허용됩니다.")
         private List<String> ingredients;
 
         @Size(max = 10, message = "extras는 최대 10개까지 허용됩니다.")
@@ -49,6 +54,17 @@ public class FridgeDto {
         @Min(value = 1, message = "count는 1 이상이어야 합니다.")
         @Max(value = 5, message = "count는 5 이하여야 합니다.")
         private Integer count;
+
+        /**
+         * ingredients + extras 합쳐서 1개 이상이어야 함. 둘 다 비면 400.
+         * Lombok @Getter가 getXxx를 생성하므로 메서드명을 hasAtLeast..로 두면 충돌 없음.
+         */
+        @AssertTrue(message = "재료를 1개 이상 입력해주세요.")
+        public boolean isHasAtLeastOneIngredient() {
+            int ing = ingredients == null ? 0 : ingredients.size();
+            int ext = extras == null ? 0 : extras.size();
+            return ing + ext >= 1;
+        }
     }
 
     /**
