@@ -42,6 +42,9 @@ public class SecurityConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    @Value("${app.frontend-url-www:}")
+    private String frontendUrlWww;
+
     @Value("${app.frontend-url-local:http://localhost:5173}")
     private String frontendUrlLocal;
 
@@ -124,7 +127,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(frontendUrl, frontendUrlLocal));
+        List<String> allowedOrigins = new java.util.ArrayList<>(List.of(frontendUrl, frontendUrlLocal));
+        if (frontendUrlWww != null && !frontendUrlWww.isBlank()) {
+            allowedOrigins.add(frontendUrlWww);
+        }
+        config.setAllowedOrigins(allowedOrigins);
 
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
