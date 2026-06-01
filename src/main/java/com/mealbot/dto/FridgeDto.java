@@ -74,9 +74,13 @@ public class FridgeDto {
     /**
      * POST /api/fridge/recommend 응답 바디.
      *
-     * @param recommendations 추천 결과 리스트 (count 길이)
+     * @param message         사용자에게 노출할 안내 문구. intent별로 Spring이 결정.
+     *                        recommend 정상 시 AI answer 그대로, 그 외(폴백/이상 케이스)는
+     *                        냉장고 페이지 맥락에 맞는 자체 문구로 교체된 값.
+     * @param recommendations 추천 결과 리스트. 0개(빈 상태) 또는 2개.
      */
     public record RecommendResponse(
+            String message,
             List<Recommendation> recommendations
     ) {}
 }
