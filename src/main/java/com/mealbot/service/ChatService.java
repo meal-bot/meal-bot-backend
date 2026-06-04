@@ -164,9 +164,9 @@ public class ChatService {
         // slots_updated.free_text는 AI 서버가 echo하는 값이므로 사용하지 않음.
         // 이번 턴 새 조각은 free_text_delta 별도 필드로 수신.
         // slot_fill 포함: 시간대/스타일 답하기 전 자유조건을 먼저 말하는 경우 슬롯 단계에서 버려지지 않도록.
-        // refine은 덮어쓰기 정책 확정 후 별도 추가.
+        // refine 포함: AI 서버가 refine intent에도 free_text_delta를 반환하므로 동일하게 누적.
         String intent = aiResponse.intent();
-        if ("recommend".equals(intent) || "slot_fill".equals(intent)) {
+        if ("recommend".equals(intent) || "slot_fill".equals(intent) || "refine".equals(intent)) {
             chat.setFreeText(appendFreeText(chat.getFreeText(), aiResponse.freeTextDelta()));
         }
 
