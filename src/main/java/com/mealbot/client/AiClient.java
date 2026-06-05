@@ -4,11 +4,14 @@ import com.mealbot.dto.AiDto;
 import com.mealbot.dto.AiRecipeDto;
 import com.mealbot.exception.RecipeNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 /**
  * Python AI 서버 호출 클라이언트.
@@ -24,6 +27,7 @@ public class AiClient {
 
     private static final String CHAT_PATH = "/chat";
     private static final String RECIPES_PATH = "/recipes/{recipeId}";
+    private static final String RANDOM_RECIPES_PATH = "/recipes/random";
 
     private final RestClient restClient;
 
@@ -72,5 +76,15 @@ public class AiClient {
         } catch (HttpClientErrorException.NotFound e) {
             throw new RecipeNotFoundException(recipeId);
         }
+    }
+
+    public List<AiRecipeDto.Response> getRandomRecipes(int count) {
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(RANDOM_RECIPES_PATH)
+                        .queryParam("count", count)
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
     }
 }

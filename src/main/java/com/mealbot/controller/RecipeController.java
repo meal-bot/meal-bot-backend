@@ -11,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
+
+import java.util.List;
 
 /**
  * 레시피 상세 조회 API.
@@ -34,6 +37,13 @@ public class RecipeController {
     private static final String ERROR_MESSAGE_AI_SERVER = "AI 서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
 
     private final RecipeService recipeService;
+
+    @GetMapping("/random")
+    public ResponseEntity<List<RecipeDto.Response>> getRandomRecipes(
+            @RequestParam(defaultValue = "10") int count
+    ) {
+        return ResponseEntity.ok(recipeService.getRandomRecipes(count));
+    }
 
     @GetMapping("/{recipeId}")
     public ResponseEntity<RecipeDto.Response> getRecipe(@PathVariable String recipeId) {

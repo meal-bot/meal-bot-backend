@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 레시피 상세 조회 서비스.
  *
@@ -33,6 +35,13 @@ public class RecipeService {
         log.info("recipe 상세 조회 요청: recipeId={}", recipeId);
         AiRecipeDto.Response ai = aiClient.getRecipe(recipeId);
         return toResponseDto(ai);
+    }
+
+    public List<RecipeDto.Response> getRandomRecipes(int count) {
+        log.info("random recipes request: count={}", count);
+        return aiClient.getRandomRecipes(count).stream()
+                .map(RecipeService::toResponseDto)
+                .toList();
     }
 
     private static RecipeDto.Response toResponseDto(AiRecipeDto.Response a) {
