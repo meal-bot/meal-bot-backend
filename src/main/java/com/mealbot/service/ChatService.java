@@ -324,8 +324,10 @@ public class ChatService {
                 .findTop50ByChatOrderByCreatedAtDesc(chat)
                 .stream()
                 .filter(m -> ChatMessage.ROLE_ASSISTANT.equals(m.getRole()))
+                .map(m -> RecommendationUtils.deserialize(m.getRecommendationsJson()))
+                .filter(list -> list != null && !list.isEmpty())
                 .findFirst()
-                .map(m -> RecommendationUtils.deserialize(m.getRecommendationsJson()).stream()
+                .map(list -> list.stream()
                         .map(r -> new AiDto.LastRecommendation(r.recipeId(), r.name()))
                         .toList())
                 .orElse(List.of());
