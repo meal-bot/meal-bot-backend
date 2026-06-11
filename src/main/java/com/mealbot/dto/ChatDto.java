@@ -15,11 +15,6 @@ import java.util.List;
  * AI 통신용 DTO(AiDto)와 분리. 레이어 책임:
  * - AiDto: Spring ↔ FastAPI 내부 통신
  * - ChatDto: Spring ↔ 클라이언트 노출
- *
- * v0.3 변경 사항:
- * - 게스트 모드 비활성화 (GuestSendRequest, GuestSendResponse 주석 처리, 추후 보완 예정)
- * - SendResponse를 record로 교체, v0.3 응답 구조(intent/answer/recommendations/flags) 반영
- * - Recommendation, Flags record 신규
  */
 public class ChatDto {
 

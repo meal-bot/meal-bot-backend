@@ -16,8 +16,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     /** 슬라이딩 윈도우용. 최근 50개를 DESC로 조회 후 호출부에서 오름차순 정렬 필요. */
     List<ChatMessage> findTop50ByChatOrderByCreatedAtDesc(Chat chat);
 
-    /** Calendar 기능용: 날짜 범위 내 추천 결과가 있는 assistant 메시지 조회.
-     *  v0.3: hasRecommendation(boolean) → recommendationsJsonIsNotNull 로 변경. */
+    /** Calendar 기능용: 날짜 범위 내 추천 결과가 있는 assistant 메시지 조회. */
     List<ChatMessage> findByChatUserAndRoleAndRecommendationsJsonIsNotNullAndCreatedAtBetweenOrderByCreatedAtDesc(
             User user, String role, LocalDateTime start, LocalDateTime end);
 }

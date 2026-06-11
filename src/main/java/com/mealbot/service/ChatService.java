@@ -26,9 +26,6 @@ public class ChatService {
     private static final String DEFAULT_CHAT_TITLE = "새 채팅";
     private static final int CHAT_TITLE_MAX_LENGTH = 20;
 
-    /** 슬라이딩 윈도우: 최근 메시지 50개 (왕복 25회 = user 25 + assistant 25) */
-    private static final int HISTORY_WINDOW_SIZE = 50;
-
     /** freeText 누적 시 사용할 구분자 (공백). retrieval query에 자연어로 들어감. */
     private static final String FREE_TEXT_DELIMITER = " ";
 
@@ -215,19 +212,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("채팅을 찾을 수 없습니다: " + chatId));
         chatRepository.delete(chat);
     }
-
-    // ── 게스트 모드 (v0.3 비활성화, 추후 보완 예정) ────────────────
-
-    // public ChatDto.GuestSendResponse sendGuest(ChatDto.GuestSendRequest request) {
-    //     List<ChatDto.ChatMessageRequest> incoming = request.getMessages();
-    //     String query = incoming.getLast().getContent();
-    //     List<AiDto.MessageDto> history = incoming.stream()
-    //             .skip(Math.max(0, incoming.size() - HISTORY_WINDOW_SIZE))
-    //             .map(m -> new AiDto.MessageDto(m.getRole(), m.getContent()))
-    //             .toList();
-    //     AiDto.Response aiResponse = aiClient.ask(query, history);
-    //     return new ChatDto.GuestSendResponse(aiResponse.getAnswer(), aiResponse.getResults());
-    // }
 
     private String createChatTitle(String content) {
         return content.length() > CHAT_TITLE_MAX_LENGTH

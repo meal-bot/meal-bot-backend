@@ -33,15 +33,6 @@ public class ChatController {
         return ResponseEntity.ok(chatService.createChat(user));
     }
 
-    // /** POST /api/chat/guest/sendMessage — 게스트 메시지 전송 (v0.3 비활성화, 추후 보완 예정) */
-    // @Operation(summary = "게스트 메시지 전송", description = "비로그인 사용자의 메시지를 처리합니다. DB 저장 없음.")
-    // @ApiResponse(responseCode = "200", description = "AI 응답 텍스트 및 추천 레시피 반환")
-    // @PostMapping("/guest/sendMessage")
-    // public ResponseEntity<ChatDto.GuestSendResponse> sendMessageToGuest(
-    //         @RequestBody ChatDto.GuestSendRequest request) {
-    //     return ResponseEntity.ok(chatService.sendGuest(request));
-    // }
-
     /** POST /api/chat/{chatId}/sendMessage — 2. 메시지 전송 + AI 응답 */
     @Operation(summary = "메시지 전송 및 AI 응답", description = "사용자 메시지를 저장하고 AI 응답을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "AI 응답 텍스트 및 추천 레시피 반환")

@@ -15,12 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 냉장고 기반 메뉴 추천 컨트롤러.
- *
- * 현재 Service는 스텁(placeholder 응답). A안/B안 결정 후 실제 구현 교체 예정.
- * 컨트롤러 계약은 안정적이므로 프론트는 이 엔드포인트에 그대로 통합 가능.
- */
 @Tag(name = "Fridge", description = "냉장고 식재료 기반 메뉴 추천 API")
 @RestController
 @RequestMapping("/api/fridge")
